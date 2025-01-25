@@ -1,4 +1,4 @@
-# diceGame
+# diceGame <a href="https://versoftly.github.io/diceGame/">Play it, CLICK HERE !</a>
 <pre>
 This code implements the dice game with the following features:
 
