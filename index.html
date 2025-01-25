@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dice Game</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .game-container {
+      background-color: #f0f0f0;
+      padding: 20px;
+      border-radius: 5px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      text-align: center;
+    }
+
+    #player1-score, #player2-score {
+      font-size: 20px;
+      margin-bottom: 10px;
+    }
+
+    #dice-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    #dice-image {
+      width: 100px;
+      height: 100px;
+    }
+
+    .options-container {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 10px;
+    }
+
+    .option-button {
+      margin: 5px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+
+    .player-turn {
+      font-weight: bold;
+    }
+
+    .disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="game-container">
+    <h1>Dice Game</h1>
+
+    <div id="player1-score">Player 1 Score: 0</div>
+    <div id="player2-score">Player 2 Score: 0</div>
+
+    <div id="dice-container">
+      <img id="dice-image" src="dice1.png" alt="Dice">
+    </div>
+
+    <div id="options-container"></div>
+
+    <div id="turn-indicator">Player 1's Turn</div>
+
+    <button id="roll-button">Roll Dice</button>
+  </div>
+
+  <script>
+    const diceImages = [
+      "dice1.png",
+      "dice2.png",
+      "dice3.png",
+      "dice4.png",
+      "dice5.png",
+      "dice6.png"
+    ];
+
+    const player1ScoreElement = document.getElementById('player1-score');
+    const player2ScoreElement = document.getElementById('player2-score');
+    const diceImageElement = document.getElementById('dice-image');
+    const optionsContainer = document.getElementById('options-container');
+    const turnIndicator = document.getElementById('turn-indicator');
+    const rollButton = document.getElementById('roll-button');
+
+    let player1Score = 0;
+    let player2Score = 0;
+    let currentPlayer = 1;
+    let availableOptions = [1, 2, 3, 4, 5, 6]; 
+
+    function rollDice() {
+      const randomIndex = Math.floor(Math.random() * 6);
+      const diceNumber = randomIndex + 1;
+      diceImageElement.src = diceImages[randomIndex];
+
+      return diceNumber;
+    }
+
+    function createOptionButtons() {
+      optionsContainer.innerHTML = ''; 
+
+      availableOptions.forEach(option => {
+        const button = document.createElement('button');
+        button.classList.add('option-button');
+        button.textContent = option;
+        button.onclick = () => handleOptionClick(option);
+        optionsContainer.appendChild(button);
+      });
+    }
+
+    function handleOptionClick(selectedOption) {
+      const diceNumber = rollDice();
+
+      if (selectedOption === diceNumber) {
+        if (currentPlayer === 1) {
+          player1Score += diceNumber;
+          player1ScoreElement.textContent = `Player 1 Score: ${player1Score}`;
+        } else {
+          player2Score += diceNumber;
+          player2ScoreElement.textContent = `Player 2 Score: ${player2Score}`;
+        }
+      } else {
+        if (currentPlayer === 1) {
+          player2Score += diceNumber;
+          player2ScoreElement.textContent = `Player 2 Score: ${player2Score}`;
+        } else {
+          player1Score += diceNumber;
+          player1ScoreElement.textContent = `Player 1 Score: ${player1Score}`;
+        }
+      }
+
+      // Remove selected option
+      availableOptions = availableOptions.filter(option => option !== selectedOption);
+
+      // Check for game over condition
+      if (availableOptions.length <= 2) {
+        endGame();
+      } else {
+        // Switch players
+        currentPlayer = currentPlayer === 1 ? 2 : 1;
+        turnIndicator.textContent = `Player ${currentPlayer}'s Turn`;
+        createOptionButtons();
+      }
+    }
+
+    function endGame() {
+      rollButton.disabled = true; 
+      if (player1Score > player2Score) {
+        alert("Player 1 Wins!");
+      } else if (player2Score > player1Score) {
+        alert("Player 2 Wins!");
+      } else {
+        alert("It's a Draw!");
+      }
+    }
+
+    // Determine starting player based on initial roll
+    const player1InitialRoll = rollDice();
+    const player2InitialRoll = rollDice();
+
+    if (player1InitialRoll > player2InitialRoll) {
+      currentPlayer = 1;
+      turnIndicator.textContent = "Player 1's Turn";
+    } else if (player2InitialRoll > player1InitialRoll) {
+      currentPlayer = 2;
+      turnIndicator.textContent = "Player 2's Turn";
+    } else {
+      // In case of a tie, randomly select a starting player
+      currentPlayer = Math.random() < 0.5 ? 1 : 2;
+      turnIndicator.textContent = `Player ${currentPlayer}'s Turn`;
+    }
+
+    createOptionButtons();
+  </script>
+
+</body>
+</html>
